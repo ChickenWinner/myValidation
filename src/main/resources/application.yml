@@ -1,0 +1,11 @@
+
+person:
+    maps: {k1: v1, k2: v2}
+    lists:
+      - lisi
+      - zhaowu
+    dog:
+      name: dog
+      age: 10
+    name: wh
+
