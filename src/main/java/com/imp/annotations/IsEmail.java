@@ -20,5 +20,7 @@ public @interface IsEmail {
     String value () default "^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)+$";
 
     // 对应字段名字
-    String keyName()default "";
+    String keyName()default "注意";
+
+    String msg() default "邮箱格式不正确";
 }

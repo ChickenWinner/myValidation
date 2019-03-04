@@ -22,7 +22,7 @@ public class MyExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(RuntimeException.class)
     public ResultDto myExceptionHandler(RuntimeException e) {
-        //e.printStackTrace();
+        e.printStackTrace();
         // 如果是参数检验异常
         if (e instanceof VerifyException) {
             VerifyException v = (VerifyException) e;

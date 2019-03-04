@@ -2,6 +2,7 @@ package com.imp.controller;
 
 import com.imp.annotations.IsEmail;
 import com.imp.annotations.NeedVerify;
+import com.imp.annotations.NotEmpty;
 import com.imp.annotations.ObjVerify;
 import com.imp.dto.Person;
 import org.springframework.stereotype.Controller;
@@ -23,9 +24,9 @@ public class TestController {
 
     @NeedVerify
     @RequestMapping("hello.do")
-    public String test(@ObjVerify Person person) {
+    public String test(@NotEmpty(msg = "i不能为空") Integer i) {
         // 测试
-        System.out.println(person);
+        // System.out.println(person);
         return "hello";
     }
 }

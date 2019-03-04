@@ -1,6 +1,7 @@
 package com.imp.dto;
 
 import com.imp.annotations.IsEmail;
+import com.imp.annotations.NotEmpty;
 
 /**
  * @author Imp
@@ -9,8 +10,11 @@ import com.imp.annotations.IsEmail;
  */
 public class Person {
 
-    @IsEmail(keyName = "wh")
+    @NotEmpty(value = "123")
+    @IsEmail
     private String email;
+
+    private String tt;
 
     public String getEmail() {
         return email;
@@ -20,10 +24,19 @@ public class Person {
         this.email = email;
     }
 
+    public String getTt() {
+        return tt;
+    }
+
+    public void setTt(String tt) {
+        this.tt = tt;
+    }
+
     @Override
     public String toString() {
-        return "Dog{" +
+        return "Person{" +
                 "email='" + email + '\'' +
+                ", tt='" + tt + '\'' +
                 '}';
     }
 }

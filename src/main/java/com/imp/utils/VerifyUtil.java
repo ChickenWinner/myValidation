@@ -1,7 +1,9 @@
 package com.imp.utils;
 
 import com.imp.annotations.IsEmail;
+import com.imp.annotations.NotEmpty;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Parameter;
 import java.util.regex.Matcher;
@@ -17,15 +19,17 @@ import java.util.regex.Pattern;
 public class VerifyUtil {
 
     /**
-     * 检验对象
+     * 取出对象中的属性，获得每个属性上的注解
+     * 调用方法 检验每个属性
      *
      * @param parameter 参数对象
-     * @param object    arg
+     * @param object  参数值
      * @return 检验信息
      */
     public static String objVerify(Parameter parameter, Object object) throws Exception {
         // 检验信息
         StringBuilder sb = new StringBuilder();
+
         // 获取对象中的属性
         Field[] declaredFields = parameter.getType().getDeclaredFields();
         String msg;
@@ -34,12 +38,15 @@ public class VerifyUtil {
             // 将属性设置成可访问
             field.setAccessible(true);
             // 属性对象，属性值
-            msg = verifyTool(field, field.get(object));
+            // 一个属性一个属性的检验
+            msg = getAnnotations(field, field.get(object));
             // 添加检验信息 如果成功msg为null
-            sb.append(msg).append(",");
+            if(msg != null)
+            sb.append(msg).append(";");
         }
+        // 如果有出错信息
         if (sb.length() > 0) {
-            // 删除最后一个,
+            // 删除最后一个逗号
             sb.deleteCharAt(sb.length() - 1);
         }
         return sb.toString();
@@ -48,52 +55,71 @@ public class VerifyUtil {
     /**
      * 检验基本类型
      *
-     * @param parameter
-     * @param object
+     * @param parameter 参数对象
+     * @param object 参数值
      * @return 检验信息
      */
     public static String normalVerify(Parameter parameter, Object object) {
         // 参数对象，参数值
-        return verifyTool(parameter, object).trim();
+        return getAnnotations(parameter, object).trim();
     }
+
 
     /**
-     * 执行检验
+     * 尝试取出每个属性或者参数前的所有注解
      *
      * @param parameter 参数对象
-     * @param object    arg 通过arg取值
+     * @param object    参数值
      * @return 检验信息
      */
-    private static String verifyTool(Object parameter, Object object) {
-        StringBuilder sb = new StringBuilder();
-        String isEmail;
+    private static String getAnnotations(Object parameter, Object object) {
+        Annotation[] annotations;
 
-        isEmail = isEmail(parameter, object);
-        sb.append(isEmail == null ? "" : isEmail + ",");
-        if (sb.length() > 0) {
-            sb.deleteCharAt(sb.length() - 1);
-        }
-        return sb.toString().trim();
-
-    }
-
-    private static String isEmail(Object parameter, Object object) {
-        IsEmail annotation;
+        // 如果是属性
         if (parameter.getClass().equals(Field.class)) {
-            // 获取属性上的IsEmail注解
-            annotation = ((Field) parameter).getAnnotation(IsEmail.class);
-        } else {
-            // 获取参数前的IsEmail注解
-            annotation = ((Parameter) parameter).getAnnotation(IsEmail.class);
+            // 获得所有注解
+            annotations = ((Field) parameter).getAnnotations();
+            return doMethod(parameter, annotations, object);
+        } else { // 否则就是方法的参数
+            annotations = ((Parameter) parameter).getAnnotations();
+            return doMethod(parameter, annotations, object);
         }
-        return VerifyEmail(annotation, object);
     }
 
-//    private static String isEmail(Field field, Object object) {
-//        // 获取属性上的注解
-//        IsEmail annotation = field.getAnnotation(IsEmail.class);
-//        return VerifyEmail(annotation, object);
-//    }
+
+    /**
+     * 判断每个是哪个注解，去执行对应的方法
+     * @param annotations 注解数组
+     * @param object 值
+     * @return 检验信息
+     */
+    private static String doMethod(Object parameter, Annotation[] annotations, Object object) {
+        // 检验信息
+        StringBuilder sb = new StringBuilder();
+        // 如果注解数组不空
+        if (annotations != null && annotations.length > 0) {
+            // 遍历所有注解
+            for (Annotation annotation : annotations) {
+                // 判断是哪个注解，调用相应的方法
+                if (annotation instanceof IsEmail) {
+                    // 如果有错误信息，进行拼接
+                    if(VerifyEmail((IsEmail) annotation, object) != null) {
+                        sb.append(VerifyEmail((IsEmail) annotation, object)).append(",");
+                    }
+                } else if(annotation instanceof NotEmpty) {
+                    if(VerifyEmpty(parameter,(NotEmpty)annotation, object) != null) {
+                        sb.append(VerifyEmpty(parameter,(NotEmpty) annotation, object)).append(",");
+                    }
+                }
+            }
+            if (sb.length() > 0) {
+                sb.deleteCharAt(sb.length() - 1);
+                return sb.toString().trim();
+            }
+        }
+        // 都不是或者没有注解，返回Null
+        return null;
+    }
 
 
     /**
@@ -119,9 +145,34 @@ public class VerifyUtil {
                 && object.toString().length() > 0 && !annotation.value().equals("")) {
             Pattern compile = Pattern.compile(annotation.value()); // 正则
             Matcher matcher = compile.matcher(object.toString()); // 属性值是否匹配正则
-            return matcher.matches() ? null : annotation.keyName() + "," + "请输入正确邮箱的格式";
+            return matcher.matches() ? null : annotation.keyName() + "," + annotation.msg();
         }
         // 没有注解，则直接检验通过
         return null;
     }
+
+    private static String VerifyEmpty(Object parameter, NotEmpty annotation, Object object) {
+//        String name = "";
+//        // 获得参数名
+//        if(parameter.getClass().equals(Field.class)) {
+//            name = ((Field)parameter).getName();
+//        }
+
+        // 如果有注解且值不为空
+        if(annotation != null && object != null && object.toString().length() > 0) {
+            // 如果有手动写value值，且不满足该value值
+            if(!annotation.value().equals("")
+                    && !annotation.value().equals(object.toString())) {
+                return annotation.keyName() + "," +"该参数必须等于" + annotation.value();
+            }
+            return null;
+        }
+        // 如果有注解且值为空
+        if(annotation != null && (object == null || object.toString().length() == 0)) {
+            return annotation.keyName() + ","  + annotation.msg();
+        }
+        return null;
+    }
+
+
 }
