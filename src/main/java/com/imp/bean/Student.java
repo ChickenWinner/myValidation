@@ -1,6 +1,7 @@
 package com.imp.bean;
 
 import com.imp.annotations.IsEmail;
+import com.imp.annotations.Length;
 import com.imp.annotations.NotEmpty;
 
 /**
@@ -10,10 +11,9 @@ import com.imp.annotations.NotEmpty;
  */
 public class Student {
 
-    @NotEmpty(msg = "名称不能为空")
+    @Length(max = 3, min = 1, msg = "name的长度必须大于1小于3")
     private String name;
 
-    @IsEmail(msg = "邮箱格式不正确")
     private String email;
 
     public String getName() {

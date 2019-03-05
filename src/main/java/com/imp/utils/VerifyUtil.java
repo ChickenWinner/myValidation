@@ -1,6 +1,7 @@
 package com.imp.utils;
 
 import com.imp.annotations.IsEmail;
+import com.imp.annotations.Length;
 import com.imp.annotations.NotEmpty;
 
 import java.lang.annotation.Annotation;
@@ -110,8 +111,13 @@ public class VerifyUtil {
                     if(VerifyEmpty(parameter,(NotEmpty)annotation, object) != null) {
                         sb.append(VerifyEmpty(parameter,(NotEmpty) annotation, object)).append(",");
                     }
+                } else if(annotation instanceof Length) {
+                    if(VerifyLength((Length)annotation, object) != null) {
+                        sb.append(VerifyLength((Length) annotation, object)).append(",");
+                    }
                 }
             }
+
             if (sb.length() > 0) {
                 sb.deleteCharAt(sb.length() - 1);
                 return sb.toString().trim();
@@ -174,5 +180,27 @@ public class VerifyUtil {
         return null;
     }
 
+    // 检验长度
+    private static String VerifyLength(Length annotation, Object object) {
+        // 如果有注解，允许为空， 值为空 通过
+        if(annotation != null && annotation.isNull() && (object == null ||
+        object.toString().length() == 0) ) {
+            return null;
+        }
+        // 如果有注解，不允许为空， 值为空 不通过
+        if(annotation != null && !annotation.isNull() && (object == null ||
+                object.toString().length() == 0) ) {
+            return annotation.keyName() + ",长度不能为空";
+        }
+        // 如果有注解，值不为空
+        if(annotation != null && object != null && object.toString().length() > 0) {
+            // 如果长度不在范围内
+            if(object.toString().length() > annotation.max() ||
+                        object.toString().length() < annotation.min())
+            return annotation.keyName() + "," + annotation.msg();
+        }
+
+        return null;
+    }
 
 }

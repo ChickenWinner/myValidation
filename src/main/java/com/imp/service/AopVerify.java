@@ -81,6 +81,7 @@ public class AopVerify {
         }
     }
 
+    // 判断是不是自己的对象
     private boolean isObj(Object object) {
         if(object instanceof Integer || object instanceof String || object instanceof  Double
                 || object instanceof Float || object instanceof  Character

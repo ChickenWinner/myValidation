@@ -24,7 +24,7 @@ public class DemoApplicationTests {
 
     @Test
     public void beanTest() {
-
+        System.out.println("".length());
     }
 
 }
