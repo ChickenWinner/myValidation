@@ -1,7 +1,6 @@
 package com.imp.service;
 
 import com.imp.annotations.NeedVerify;
-import com.imp.annotations.ObjVerify;
 import com.imp.enums.VerifyMsg;
 import com.imp.exception.VerifyException;
 import com.imp.utils.VerifyUtil;
@@ -62,23 +61,17 @@ public class AopVerify {
         StringBuilder sb = new StringBuilder();
         // 遍历所有参数
         for(int i = 0; i < parameters.length; i++) {
-            // 如果是参数是dto对象，判断依据是类名含有dto的包名
             // 2个不同对象getName()区别
             // args:com.imp.dto.Person
             // param:[Ljava.lang.reflect.Parameter;
-            // TODO: 修改判断对象的方式，如果不是基本类型，就是对象
-            if(args[i] != null && args[i].getClass().getName().contains(BASE_LOCATION)) {
-                // 尝试获取参数为对象前的ObjVerify注解
-                ObjVerify objVerify = parameters[i].getAnnotation(ObjVerify.class);
-                // 如果有ObjVerify注解，检验该对象
-                if (objVerify != null) {
+            // args[i].getClass().getName().contains(BASE_LOCATION)
+                if (args[i] != null && isObj(args[i])) {
                     sb.append(VerifyUtil.objVerify(parameters[i], args[i]));
+                } else {
+                    System.out.println(1);
+                    // 如果是基本类型
+                    sb.append(VerifyUtil.normalVerify(parameters[i], args[i]));
                 }
-            } else {
-                // 如果是基本类型
-                sb.append(VerifyUtil.normalVerify(parameters[i], args[i]));
-            }
-
         }
         // 如果有检验出错的信息，抛出异常
         // 抛出的异常会被全局异常捕获器捕获
@@ -86,5 +79,15 @@ public class AopVerify {
             // 异常码 异常信息
             throw new VerifyException(VerifyMsg.NOT_PASS_VERIFI.getCode(),sb.toString());
         }
+    }
+
+    private boolean isObj(Object object) {
+        if(object instanceof Integer || object instanceof String || object instanceof  Double
+                || object instanceof Float || object instanceof  Character
+                || object instanceof Long || object instanceof Short
+                || object instanceof Boolean || object instanceof Byte) {
+            return false;
+        }
+        return true;
     }
 }

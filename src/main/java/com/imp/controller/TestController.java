@@ -3,7 +3,7 @@ package com.imp.controller;
 import com.imp.annotations.IsEmail;
 import com.imp.annotations.NeedVerify;
 import com.imp.annotations.NotEmpty;
-import com.imp.annotations.ObjVerify;
+import com.imp.bean.Student;
 import com.imp.dto.Person;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,7 +24,15 @@ public class TestController {
 
     @NeedVerify
     @RequestMapping("hello.do")
-    public String test(@NotEmpty(msg = "i不能为空") Integer i) {
+    public String test(Student student) {
+        // 测试
+        // System.out.println(person);
+        return "hello";
+    }
+
+    @NeedVerify
+    @RequestMapping("test.do")
+    public String test2(Student student) {
         // 测试
         // System.out.println(person);
         return "hello";
