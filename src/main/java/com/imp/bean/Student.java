@@ -2,6 +2,7 @@ package com.imp.bean;
 
 import com.imp.annotations.IsEmail;
 import com.imp.annotations.Length;
+import com.imp.annotations.Max;
 import com.imp.annotations.NotEmpty;
 
 /**
@@ -11,10 +12,12 @@ import com.imp.annotations.NotEmpty;
  */
 public class Student {
 
-    @Length(max = 3, min = 1, msg = "name的长度必须大于1小于3")
     private String name;
 
     private String email;
+
+    @Max(value = 12, msg = "age最大为12")
+    private int age;
 
     public String getName() {
         return name;
@@ -32,11 +35,20 @@ public class Student {
         this.email = email;
     }
 
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
     @Override
     public String toString() {
         return "Student{" +
                 "name='" + name + '\'' +
                 ", email='" + email + '\'' +
+                ", age=" + age +
                 '}';
     }
 }

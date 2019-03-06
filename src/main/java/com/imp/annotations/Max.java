@@ -6,23 +6,21 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 检验String长度是否合法
+ * 数字类型最大值
  * 可以作为对象的属性，可以作为方法的参数
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD,ElementType.PARAMETER})
-public @interface Length {
-
-    String keyName()default "注意";
+public @interface Max {
 
     // 是否允许为空
-    boolean isNull () default true;
+    boolean isNull() default true;
 
-    // 长度默认是0
-    int min () default 0;
-    // 最大长度
-    int max () default  Integer.MAX_VALUE;
+    // 默认最大值
+    int value() default Integer.MAX_VALUE;
 
-    String msg() default "长度不合法" ;
+    // 对应字段名字
+    String keyName()default "注意";
 
+    String msg() default "不能超过最大值";
 }

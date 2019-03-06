@@ -2,6 +2,7 @@ package com.imp.utils;
 
 import com.imp.annotations.IsEmail;
 import com.imp.annotations.Length;
+import com.imp.annotations.Max;
 import com.imp.annotations.NotEmpty;
 
 import java.lang.annotation.Annotation;
@@ -112,8 +113,12 @@ public class VerifyUtil {
                         sb.append(VerifyEmpty(parameter,(NotEmpty) annotation, object)).append(",");
                     }
                 } else if(annotation instanceof Length) {
-                    if(VerifyLength((Length)annotation, object) != null) {
-                        sb.append(VerifyLength((Length) annotation, object)).append(",");
+                    if(VerifyLength(parameter,(Length)annotation, object) != null) {
+                        sb.append(VerifyLength(parameter,(Length) annotation, object)).append(",");
+                    }
+                } else if(annotation instanceof Max) {
+                    if(VerifyMax(parameter,(Max)annotation, object) != null) {
+                        sb.append(VerifyMax(parameter,(Max) annotation, object)).append(",");
                     }
                 }
             }
@@ -158,18 +163,18 @@ public class VerifyUtil {
     }
 
     private static String VerifyEmpty(Object parameter, NotEmpty annotation, Object object) {
-//        String name = "";
-//        // 获得参数名
-//        if(parameter.getClass().equals(Field.class)) {
-//            name = ((Field)parameter).getName();
-//        }
+        String name = "";
+        // 获得参数名
+        if(parameter.getClass().equals(Field.class)) {
+            name = ((Field)parameter).getName();
+        }
 
         // 如果有注解且值不为空
         if(annotation != null && object != null && object.toString().length() > 0) {
             // 如果有手动写value值，且不满足该value值
             if(!annotation.value().equals("")
                     && !annotation.value().equals(object.toString())) {
-                return annotation.keyName() + "," +"该参数必须等于" + annotation.value();
+                return annotation.keyName() + "," + name +"必须等于" + annotation.value();
             }
             return null;
         }
@@ -181,16 +186,27 @@ public class VerifyUtil {
     }
 
     // 检验长度
-    private static String VerifyLength(Length annotation, Object object) {
-        // 如果有注解，允许为空， 值为空 通过
+    private static String VerifyLength(Object parameter, Length annotation, Object object) {
+
+        String name = "";
+        // 获得参数名
+        if(parameter.getClass().equals(Field.class)) {
+            name = ((Field)parameter).getName();
+        }
+        // 如果有注解，允许为空， 值为空
         if(annotation != null && annotation.isNull() && (object == null ||
         object.toString().length() == 0) ) {
-            return null;
+            // 没有设置最小长度
+            if(annotation.min() == 0) {
+                return null;
+            } else {
+                return annotation.keyName() + "," + annotation.msg();
+            }
         }
         // 如果有注解，不允许为空， 值为空 不通过
         if(annotation != null && !annotation.isNull() && (object == null ||
                 object.toString().length() == 0) ) {
-            return annotation.keyName() + ",长度不能为空";
+            return annotation.keyName() + name +"长度不能为空";
         }
         // 如果有注解，值不为空
         if(annotation != null && object != null && object.toString().length() > 0) {
@@ -200,6 +216,33 @@ public class VerifyUtil {
             return annotation.keyName() + "," + annotation.msg();
         }
 
+        return null;
+    }
+
+    // 最大数值
+    private static String VerifyMax(Object parameter, Max annotation, Object object) {
+        String name = "";
+        // 获得参数名
+        if(parameter.getClass().equals(Field.class)) {
+            name = ((Field)parameter).getName();
+        }
+
+        // 如果有注解，允许为空， 值为空
+        if(annotation != null && annotation.isNull() && (object == null ||
+                object.toString().length() == 0) ) {
+            return null;
+        }
+        // 如果有注解，不允许为空， 值为空 不通过
+        if(annotation != null && !annotation.isNull() && (object == null ||
+                object.toString().length() == 0) ) {
+            return annotation.keyName() + name +"值不能为空";
+        }
+        // 如果有注解，值不为空
+        if(annotation != null && object != null && object.toString().length() > 0) {
+            // 如果数值不在范围内
+            if(Integer.parseInt(object.toString()) > annotation.value())
+                return annotation.keyName() + "," + annotation.msg();
+        }
         return null;
     }
 

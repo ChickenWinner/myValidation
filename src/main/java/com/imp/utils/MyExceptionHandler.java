@@ -20,15 +20,12 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class MyExceptionHandler {
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler(RuntimeException.class)
+    @ExceptionHandler(VerifyException.class)
     public ResultDto myExceptionHandler(RuntimeException e) {
-        e.printStackTrace();
+        //e.printStackTrace();
         // 如果是参数检验异常
-        if (e instanceof VerifyException) {
-            VerifyException v = (VerifyException) e;
-            return ResultUtil.error(v.getCode(), v.getMsg());
-        }
-        return ResultUtil.success();
+        VerifyException v = (VerifyException) e;
+        return ResultUtil.error(v.getCode(), v.getMsg());
     }
 }
 

@@ -68,7 +68,6 @@ public class AopVerify {
                 if (args[i] != null && isObj(args[i])) {
                     sb.append(VerifyUtil.objVerify(parameters[i], args[i]));
                 } else {
-                    System.out.println(1);
                     // 如果是基本类型
                     sb.append(VerifyUtil.normalVerify(parameters[i], args[i]));
                 }
