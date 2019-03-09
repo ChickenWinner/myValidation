@@ -1,9 +1,6 @@
 package com.imp.bean;
 
-import com.imp.annotations.IsEmail;
-import com.imp.annotations.Length;
-import com.imp.annotations.Max;
-import com.imp.annotations.NotEmpty;
+import com.imp.annotations.*;
 
 /**
  * @author Imp
@@ -16,7 +13,7 @@ public class Student {
 
     private String email;
 
-    @Max(value = 12, msg = "age最大为12")
+    @Min(value = 12, msg = "age最小为12")
     private int age;
 
     public String getName() {

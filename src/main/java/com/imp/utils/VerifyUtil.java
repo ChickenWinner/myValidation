@@ -1,9 +1,6 @@
 package com.imp.utils;
 
-import com.imp.annotations.IsEmail;
-import com.imp.annotations.Length;
-import com.imp.annotations.Max;
-import com.imp.annotations.NotEmpty;
+import com.imp.annotations.*;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -119,6 +116,10 @@ public class VerifyUtil {
                 } else if(annotation instanceof Max) {
                     if(VerifyMax(parameter,(Max)annotation, object) != null) {
                         sb.append(VerifyMax(parameter,(Max) annotation, object)).append(",");
+                    }
+                } else if(annotation instanceof Min) {
+                    if(VerifyMin(parameter,(Min)annotation, object) != null) {
+                        sb.append(VerifyMin(parameter,(Min) annotation, object)).append(",");
                     }
                 }
             }
@@ -241,6 +242,33 @@ public class VerifyUtil {
         if(annotation != null && object != null && object.toString().length() > 0) {
             // 如果数值不在范围内
             if(Integer.parseInt(object.toString()) > annotation.value())
+                return annotation.keyName() + "," + annotation.msg();
+        }
+        return null;
+    }
+
+    // 最小数值
+    private static String VerifyMin(Object parameter, Min annotation, Object object) {
+        String name = "";
+        // 获得参数名
+        if(parameter.getClass().equals(Field.class)) {
+            name = ((Field)parameter).getName();
+        }
+
+        // 如果有注解，允许为空， 值为空
+        if(annotation != null && annotation.isNull() && (object == null ||
+                object.toString().length() == 0) ) {
+            return null;
+        }
+        // 如果有注解，不允许为空， 值为空 不通过
+        if(annotation != null && !annotation.isNull() && (object == null ||
+                object.toString().length() == 0) ) {
+            return annotation.keyName() + name +"值不能为空";
+        }
+        // 如果有注解，值不为空
+        if(annotation != null && object != null && object.toString().length() > 0) {
+            // 如果数值不在范围内
+            if(Integer.parseInt(object.toString()) < annotation.value())
                 return annotation.keyName() + "," + annotation.msg();
         }
         return null;
