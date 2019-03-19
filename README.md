@@ -3,7 +3,7 @@
 #### 介绍
 参数检验器v1.0
 目前实现的注解有：
-![实现的注解截图](https://images.gitee.com/uploads/images/2019/0319/232642_8ebebcdf_2065443.png "QQ图片20190319232610.png")
+![实现的注解截图](https://images.gitee.com/uploads/images/2019/0319/232642_8ebebcdf_2065443.png)
 1. 验证邮箱格式
 2. 限制数字的最大最小值
 3. 限制字符串的最大长度
@@ -19,9 +19,9 @@
 #### 使用说明
 1. 在所需要检验参数的controller方法上加上@NeedVerify注解
 2. 在所需要检验的参数前加上注解 如@NotEmpty注解, 限制字段不能为空 
-![输入图片说明](https://images.gitee.com/uploads/images/2019/0319/233047_63a05d58_2065443.png "屏幕截图.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2019/0319/233047_63a05d58_2065443.png)
 3. 传入空参数，检验不通过，返回检验信息；参数不为空，检验通过，正常执行代码逻辑
-![检验不通过](https://images.gitee.com/uploads/images/2019/0319/233328_36a42c94_2065443.png "屏幕截图.png")
+![检验不通过](https://images.gitee.com/uploads/images/2019/0319/233328_36a42c94_2065443.png)
 
 
 3. 参数支持是对象类型，如果是对象，在对象的属性上加注解即可
