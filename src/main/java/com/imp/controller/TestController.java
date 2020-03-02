@@ -1,6 +1,7 @@
 package com.imp.controller;
 
 import com.imp.annotations.IsEmail;
+import com.imp.annotations.Max;
 import com.imp.annotations.NeedVerify;
 import com.imp.annotations.NotEmpty;
 import com.imp.bean.Student;
@@ -24,9 +25,9 @@ public class TestController {
 
     @NeedVerify
     @RequestMapping("hello.do")
-    public String test(Student student) {
+    public String test(@Max(value = 15) Integer age) {
         // 测试
-        // System.out.println(person);
+        //System.out.println(age);
         return "hello";
     }
 

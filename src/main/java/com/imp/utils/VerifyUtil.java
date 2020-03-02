@@ -60,7 +60,9 @@ public class VerifyUtil {
      */
     public static String normalVerify(Parameter parameter, Object object) {
         // 参数对象，参数值
+        if(getAnnotations(parameter, object) != null )
         return getAnnotations(parameter, object).trim();
+        return "";
     }
 
 
@@ -73,7 +75,6 @@ public class VerifyUtil {
      */
     private static String getAnnotations(Object parameter, Object object) {
         Annotation[] annotations;
-
         // 如果是属性
         if (parameter.getClass().equals(Field.class)) {
             // 获得所有注解
@@ -166,9 +167,10 @@ public class VerifyUtil {
     private static String VerifyEmpty(Object parameter, NotEmpty annotation, Object object) {
         String name = "";
         // 获得参数名
-        if(parameter.getClass().equals(Field.class)) {
-            name = ((Field)parameter).getName();
-        }
+//        if(parameter.getClass().equals(Field.class)) {
+//            name = ((Field)parameter).getName();
+//        }
+
 
         // 如果有注解且值不为空
         if(annotation != null && object != null && object.toString().length() > 0) {
@@ -222,11 +224,6 @@ public class VerifyUtil {
 
     // 最大数值
     private static String VerifyMax(Object parameter, Max annotation, Object object) {
-        String name = "";
-        // 获得参数名
-        if(parameter.getClass().equals(Field.class)) {
-            name = ((Field)parameter).getName();
-        }
 
         // 如果有注解，允许为空， 值为空
         if(annotation != null && annotation.isNull() && (object == null ||
@@ -236,7 +233,7 @@ public class VerifyUtil {
         // 如果有注解，不允许为空， 值为空 不通过
         if(annotation != null && !annotation.isNull() && (object == null ||
                 object.toString().length() == 0) ) {
-            return annotation.keyName() + name +"值不能为空";
+            return annotation.keyName() +"值不能为空";
         }
         // 如果有注解，值不为空
         if(annotation != null && object != null && object.toString().length() > 0) {
@@ -249,11 +246,7 @@ public class VerifyUtil {
 
     // 最小数值
     private static String VerifyMin(Object parameter, Min annotation, Object object) {
-        String name = "";
-        // 获得参数名
-        if(parameter.getClass().equals(Field.class)) {
-            name = ((Field)parameter).getName();
-        }
+
 
         // 如果有注解，允许为空， 值为空
         if(annotation != null && annotation.isNull() && (object == null ||
@@ -263,7 +256,7 @@ public class VerifyUtil {
         // 如果有注解，不允许为空， 值为空 不通过
         if(annotation != null && !annotation.isNull() && (object == null ||
                 object.toString().length() == 0) ) {
-            return annotation.keyName() + name +"值不能为空";
+            return annotation.keyName() +"值不能为空";
         }
         // 如果有注解，值不为空
         if(annotation != null && object != null && object.toString().length() > 0) {

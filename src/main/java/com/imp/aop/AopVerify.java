@@ -5,9 +5,8 @@ import com.imp.enums.VerifyMsg;
 import com.imp.exception.VerifyException;
 import com.imp.utils.VerifyUtil;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.Signature;
+import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -25,15 +24,13 @@ import java.lang.reflect.Parameter;
 
 @Aspect
 @Component
-@PropertySource({"classpath:config/setting.properties"})
 public class AopVerify {
 
-    @Value("${base.location}")
-    private String BASE_LOCATION; // 从配置文件中读取dto所在包
 
     // 切点为controller包下的所有类的所有方法
     @Pointcut("execution(* com.imp.controller.*.*(..))")
     public void doVerify(){}
+
 
     /**
      * 在每个需要被检验的方法前执行
@@ -51,8 +48,7 @@ public class AopVerify {
         if(needVerify == null) {
             return;
         }
-        // 获得方法的所有参数
-        // args的好处是可以获得参数的值
+        // 获得方法的所有参数值
         Object[] args = joinPoint.getArgs();
         // 获得方法的所有参数的对象
         // parameter的好处是可以获得参数前的的注解
@@ -64,7 +60,6 @@ public class AopVerify {
             // 2个不同对象getName()区别
             // args:com.imp.dto.Person
             // param:[Ljava.lang.reflect.Parameter;
-            // args[i].getClass().getName().contains(BASE_LOCATION)
                 if (args[i] != null && isObj(args[i])) {
                     sb.append(VerifyUtil.objVerify(parameters[i], args[i]));
                 } else {
@@ -90,4 +85,5 @@ public class AopVerify {
         }
         return true;
     }
+
 }
